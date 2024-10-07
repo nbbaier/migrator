@@ -1,56 +1,30 @@
 import { createClient } from "@libsql/client";
+import { determineChanges, getTables } from "./utils";
 
-const db = createClient({ url: "file:test.db" });
-const pristine = createClient({ url: "file:pristine.db" });
+const schemaDesired = await Bun.file("schema.sql").text();
 
-// const schema = await Bun.file("schema.sql").text();
-// const schemaBatch = schema
-//   .trim()
-//   .split("\n")
-//   .filter((sql) => sql.startsWith("--") === false);
+// create the database clients
+const dbCurrent = createClient({ url: "file:test.db" });
+const dbDesired = createClient({
+	url: ":memory:",
+});
 
-const pristineTables = Object.fromEntries(
-  (
-    await pristine.execute(`SELECT name, sql FROM sqlite_schema
-    WHERE type = 'table' AND name != 'sqlite_sequence'`)
-  ).rows
-    .map((row) => {
-      return [row[0], row[1]];
-    })
-    .map(([key, value]) => [key, value])
-);
+const batchStatements = schemaDesired
+	.split(";")
+	.map((s) => s.trim().replace(/\n/g, " ").replace(/\s+/g, " "))
+	.filter(Boolean)
+	.map((s) => ({ sql: s, args: [] }));
 
-const tables = Object.fromEntries(
-  (
-    await db.execute(`SELECT name, sql FROM sqlite_schema
-      WHERE type = 'table' AND name != 'sqlite_sequence'`)
-  ).rows
-    .map((row) => {
-      return [row[0], row[1]];
-    })
-    .map(([key, value]) => [key, value])
-);
+const syncDesiredSchema = await dbDesired.batch(batchStatements, "write");
+const currentTables = await getTables(dbCurrent);
+const desiredTables = await getTables(dbDesired);
 
-const newTables = Object.keys(pristineTables).filter(
-  (key) => !new Set(Object.keys(tables)).has(key)
-);
+const changes = determineChanges(currentTables, desiredTables);
+console.log("Changes to be made:", changes);
 
-const removedTables = Object.keys(tables).filter(
-  (key) => !new Set(Object.keys(pristineTables)).has(key)
-);
-
-if (newTables.length > 0) {
-  await Promise.all(
-    newTables.map(
-      async (table: string) => await db.execute(pristineTables[table])
-    )
-  );
+for (const table of changes.newTables) {
+	await dbCurrent.execute(desiredTables[table]);
 }
-
-if (removedTables.length > 0) {
-  await Promise.all(
-    removedTables.map(
-      async (table: string) => await db.execute(`DROP TABLE ${table}`)
-    )
-  );
+for (const table of changes.deletedTables) {
+	await dbCurrent.execute(`DROP TABLE ${table}`);
 }
