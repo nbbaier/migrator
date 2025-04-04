@@ -1,30 +1,30 @@
 import { createClient } from "@libsql/client";
-import { determineChanges, getTables } from "./utils";
+import { determineChanges, applySchemaChanges, getSchema } from "./utils";
 
-const schemaTarget = await Bun.file("schema.sql").text();
+const schemaTarget = await Bun.file("db/schema.sql").text();
 
-// create the database clients
-const dbCurrent = createClient({ url: "file:test.db" });
+const db = createClient({ url: "file:db/test.db" });
 const dbTarget = createClient({
 	url: ":memory:",
 });
 
-const batchStatements = schemaTarget
-	.split(";")
-	.map((s) => s.trim().replace(/\n/g, " ").replace(/\s+/g, " "))
-	.filter(Boolean)
-	.map((s) => ({ sql: s, args: [] }));
+await dbTarget.batch(
+	schemaTarget
+		.split(";")
+		.map((s) => s.trim().replace(/\n/g, " ").replace(/\s+/g, " "))
+		.filter(Boolean),
+	"write",
+);
 
-const syncDesiredSchema = await dbTarget.batch(batchStatements, "write");
-const currentTables = await getTables(dbCurrent);
-const desiredTables = await getTables(dbTarget);
+const currentTables = await getSchema(db, "table");
+const targetTables = await getSchema(dbTarget, "table");
+const currentIndices = await getSchema(db, "index");
+const targetIndices = await getSchema(dbTarget, "index");
 
-const changes = determineChanges(currentTables, desiredTables);
-console.log("Changes to be made:", changes);
+const changes = {
+	table: determineChanges(currentTables, targetTables),
+	index: determineChanges(currentIndices, targetIndices),
+};
 
-for (const table of changes.newTables) {
-	await dbCurrent.execute(desiredTables[table]);
-}
-for (const table of changes.deletedTables) {
-	await dbCurrent.execute(`DROP TABLE ${table}`);
-}
+await applySchemaChanges(db, changes, targetTables, "table");
+await applySchemaChanges(db, changes, targetIndices, "index");

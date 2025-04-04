@@ -6,16 +6,6 @@ CREATE TABLE
     );
 
 CREATE TABLE
-    posts (
-        id INTEGER NOT NULL PRIMARY KEY,
-        title TEXT,
-        content TEXT,
-        posted TEXT
-    );
+    posts (title TEXT, content TEXT, posted TEXT);
 
-CREATE TABLE
-    likes (
-        likes INTEGER,
-        post_id INTEGER,
-        FOREIGN KEY (post_id) REFERENCES posts (id)
-    );
+CREATE INDEX idx_posts_title ON posts (title);
