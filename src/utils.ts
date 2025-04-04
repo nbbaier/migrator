@@ -1,12 +1,11 @@
 import type { Client } from "@libsql/client";
 
-export const getTables = async (
-	db: Client,
-): Promise<{ [key: string]: string }> => {
+export const getTables = async (db: Client): Promise<{ [key: string]: string }> => {
 	return Object.fromEntries(
 		(
-			await db.execute(`SELECT name, sql FROM sqlite_schema
-   WHERE type = 'table' AND name != 'sqlite_sequence'`)
+			await db.execute(
+				`SELECT name, sql FROM sqlite_schema WHERE type = 'table' AND name != 'sqlite_sequence'`,
+			)
 		).rows
 			.map((row) => {
 				return [row[0], row[1]];
@@ -15,13 +14,12 @@ export const getTables = async (
 	);
 };
 
-export const getIndices = async (
-	db: Client,
-): Promise<{ [key: string]: string }> => {
+export const getIndices = async (db: Client): Promise<{ [key: string]: string }> => {
 	return Object.fromEntries(
 		(
-			await db.execute(`SELECT name, sql FROM sqlite_schema
-   WHERE type = 'index' AND name != 'sqlite_sequence'`)
+			await db.execute(
+				`SELECT name, sql FROM sqlite_schema WHERE type = 'index' AND name != 'sqlite_sequence'`,
+			)
 		).rows
 			.map((row) => {
 				return [row[0], row[1]];
@@ -53,13 +51,11 @@ export const determineChanges = (
 };
 
 export function normaliseSql(sql: string): string {
-	let normalisedSql = sql;
-	// Remove comments:
-	normalisedSql = normalisedSql.replace(/--[^\n]*\n/g, "");
-	// Normalise whitespace:
-	normalisedSql = normalisedSql.replace(/\s+/g, " ");
-	normalisedSql = normalisedSql.replace(/ *([(),]) */g, "$1");
-	// Remove unnecessary quotes
-	normalisedSql = normalisedSql.replace(/"(\w+)"/g, "$1");
-	return normalisedSql.trim();
+	return sql
+		.replace(/--[^\n]*\n/g, "") // Remove comments
+		.replace(/\s+/g, " ") // Normalise whitespace
+		.replace(/ *([(),]) */g, "$1") // Normalise whitespace
+
+		.replace(/"(\w+)"/g, "$1") // Remove unnecessary quotes
+		.trim();
 }

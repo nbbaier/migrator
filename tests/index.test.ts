@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { normaliseSql } from "./utils";
+import { normaliseSql } from "../src/utils";
 
 test("Check SQL Normalization", () => {
 	const inputSql = `\
