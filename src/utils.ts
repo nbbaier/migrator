@@ -1,6 +1,8 @@
 import type { Client } from "@libsql/client";
 
-export const getTables = async (db: Client): Promise<{ [key: string]: string }> => {
+export const getTables = async (
+	db: Client,
+): Promise<{ [key: string]: string }> => {
 	return Object.fromEntries(
 		(
 			await db.execute(
@@ -14,7 +16,9 @@ export const getTables = async (db: Client): Promise<{ [key: string]: string }> 
 	);
 };
 
-export const getIndices = async (db: Client): Promise<{ [key: string]: string }> => {
+export const getIndices = async (
+	db: Client,
+): Promise<{ [key: string]: string }> => {
 	return Object.fromEntries(
 		(
 			await db.execute(
@@ -55,7 +59,6 @@ export function normaliseSql(sql: string): string {
 		.replace(/--[^\n]*\n/g, "") // Remove comments
 		.replace(/\s+/g, " ") // Normalise whitespace
 		.replace(/ *([(),]) */g, "$1") // Normalise whitespace
-
 		.replace(/"(\w+)"/g, "$1") // Remove unnecessary quotes
 		.trim();
 }
