@@ -1,9 +1,9 @@
 import { createClient } from "@libsql/client";
-import { determineChanges, applySchemaChanges, getSchema } from "./utils";
+import { applySchemaChanges, determineChanges, getSchema } from "./utils";
 
-const schemaTarget = await Bun.file("db/schema.sql").text();
+const schemaTarget = await Bun.file("./db/schema.sql").text();
 
-const db = createClient({ url: "file:db/test.db" });
+const db = createClient({ url: "file:./db/test.db" });
 const dbTarget = createClient({
 	url: ":memory:",
 });
@@ -26,5 +26,7 @@ const changes = {
 	index: determineChanges(currentIndices, targetIndices),
 };
 
-await applySchemaChanges(db, changes, targetTables, "table");
-await applySchemaChanges(db, changes, targetIndices, "index");
+console.log(changes);
+
+// await applySchemaChanges(db, changes, targetTables, "table");
+// await applySchemaChanges(db, changes, targetIndices, "index");
