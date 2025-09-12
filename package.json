@@ -3,13 +3,13 @@
 	"module": "src/index.ts",
 	"type": "module",
 	"devDependencies": {
-		"@biomejs/biome": "1.9.4",
-		"@types/bun": "latest"
+		"@biomejs/biome": "2.2.3",
+		"@types/bun": "^1.2.21"
 	},
 	"peerDependencies": {
-		"typescript": "5.6.2"
+		"typescript": "5.9.2"
 	},
 	"dependencies": {
-		"@libsql/client": "^0.5.6"
+		"@libsql/client": "^0.15.15"
 	}
 }
