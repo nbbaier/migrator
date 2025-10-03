@@ -5,6 +5,7 @@ import {
 	type Row,
 	type Transaction,
 } from "@libsql/client";
+import logger from "./logger";
 
 type SchemaType = "table" | "index";
 
@@ -132,10 +133,12 @@ export class Migrator {
 		}
 
 		const modifiedTables = new Set<string>();
+
 		for (const [name, sql] of pristineTables.entries()) {
-			if (normaliseSql(tables.get(name) ?? "") !== normaliseSql(sql)) {
-				modifiedTables.add(name);
-			}
+			const base = normaliseSql(tables.get(name) ?? "");
+			const pristine = normaliseSql(sql);
+			const changedTable = Boolean(base) && base !== pristine;
+			if (changedTable) modifiedTables.add(name);
 		}
 
 		for (const tblName of newTables) {
@@ -317,9 +320,9 @@ export class Migrator {
 			dedent(sql),
 		)}`;
 		if (args !== undefined) {
-			console.info(`${formatted} args = %o`, args);
+			logger.info(`${formatted} args = %o`, args);
 		} else {
-			console.info(formatted);
+			logger.info(formatted);
 		}
 		if (this.transaction) {
 			if (args !== undefined) {

@@ -4,12 +4,14 @@
 	"type": "module",
 	"devDependencies": {
 		"@biomejs/biome": "2.2.5",
-		"@types/bun": "^1.2.21"
+		"@types/bun": "^1.2.21",
+		"pino-pretty": "^13.1.1"
 	},
 	"peerDependencies": {
 		"typescript": "5.9.2"
 	},
 	"dependencies": {
-		"@libsql/client": "^0.15.15"
+		"@libsql/client": "^0.15.15",
+		"pino": "^9.13.0"
 	}
 }
