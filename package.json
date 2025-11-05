@@ -1,7 +1,22 @@
 {
 	"name": "migrator",
+	"version": "0.1.0",
+	"description": "A declarative schema migration tool for SQLite databases",
 	"module": "src/index.ts",
 	"type": "module",
+	"scripts": {
+		"test": "bun test",
+		"lint": "biome check .",
+		"format": "biome format --write .",
+		"check": "biome check --write ."
+	},
+	"keywords": [
+		"sqlite",
+		"migration",
+		"database",
+		"schema"
+	],
+	"license": "MIT",
 	"devDependencies": {
 		"@biomejs/biome": "2.2.5",
 		"@types/bun": "^1.2.21",
