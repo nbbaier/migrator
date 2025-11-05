@@ -97,7 +97,7 @@ export class Migrator {
 		if (this.origForeignKeys) {
 			const message =
 				"Database migration: Re-enable foreign keys after migration";
-			console.info(
+			logger.info(
 				`${message} with SQL:\n${leftPad("PRAGMA foreign_keys = ON")}`,
 			);
 			await this.db.execute("PRAGMA foreign_keys = ON");
@@ -217,7 +217,7 @@ export class Migrator {
 
 		const removedColumns = differenceFromSet(cols, pristineCols);
 		if (removedColumns.size && !this.allowDeletions) {
-			console.warn(
+			logger.warn(
 				"Database migration: Refusing to remove columns %o from table %s. Current cols are %o attempting migration to %o",
 				Array.from(removedColumns),
 				tblName,
@@ -232,7 +232,7 @@ export class Migrator {
 		}
 
 		const common = intersection(cols, pristineCols);
-		console.info(
+		logger.info(
 			"cols: %o, pristine_cols: %o",
 			Array.from(cols),
 			Array.from(pristineCols),

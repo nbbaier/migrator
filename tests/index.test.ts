@@ -14,7 +14,7 @@ const createTempDb = () => {
 	};
 };
 
-test("dumbMigrateDb adds tables and columns while preserving data", async () => {
+test("migrate adds tables and columns while preserving data", async () => {
 	const { client: db, filePath } = createTempDb();
 	try {
 		await db.executeMultiple(`
@@ -59,7 +59,7 @@ test("dumbMigrateDb adds tables and columns while preserving data", async () => 
 	}
 });
 
-test("dumbMigrateDb refuses destructive changes when allowDeletions is false", async () => {
+test("migrate refuses destructive changes when allowDeletions is false", async () => {
 	const { client: db, filePath } = createTempDb();
 	try {
 		await db.executeMultiple(`
