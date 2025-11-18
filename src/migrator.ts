@@ -156,11 +156,10 @@ export class Migrator {
 		}
 
 		// Basic validation: check for potentially dangerous SQL
-		const lowerSchema = this.schema.toLowerCase();
 		const dangerousPatterns = [
 			{ pattern: /\battach\s+database\b/i, message: "ATTACH DATABASE" },
 			{ pattern: /\bdetach\s+database\b/i, message: "DETACH DATABASE" },
-			{ pattern: /\bpragma\s+(?!foreign_keys|user_version)\w+/i, message: "unsafe PRAGMA" },
+			{ pattern: /\bpragma\s+(?!foreign_keys|user_version|defer_foreign_keys|foreign_key_check|table_info)\w+/i, message: "unsafe PRAGMA" },
 		];
 
 		for (const { pattern, message } of dangerousPatterns) {
@@ -603,19 +602,6 @@ export class Migrator {
  * ```
  */
 export class RuntimeError extends Error {}
-
-/**
- * Validates that a string is a safe SQL identifier.
- * SQLite identifiers must start with a letter or underscore,
- * and contain only letters, digits, underscores, or dollar signs.
- */
-function validateIdentifier(identifier: string, context: string): void {
-	if (!/^[a-zA-Z_][a-zA-Z0-9_$]*$/.test(identifier)) {
-		throw new RuntimeError(
-			`Invalid SQL identifier for ${context}: "${identifier}". Identifiers must start with a letter or underscore and contain only alphanumeric characters, underscores, or dollar signs.`,
-		);
-	}
-}
 
 /**
  * Escapes a SQL identifier by wrapping it in double quotes.

@@ -16,11 +16,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Index Migration**: Full support for creating, updating, and removing indices
 - **Transaction Safety**: All migrations wrapped in transactions with automatic rollback on error
 - **Foreign Key Validation**: Validates foreign key constraints before committing migrations
-- **Deletion Protection**: Prevents accidental deletion of tables and columns unless explicitly allowed via `allowDeletions=true`
+- **Deletion Protection**: Prevents accidental deletion of tables and columns unless explicitly allowed via `allowDeletions=true`. Note: Deletion protection does not apply to indices, triggers, or views, which can be deleted regardless of this flag.
 - **PRAGMA Migration**: Supports migration of `foreign_keys` and `user_version` pragmas
 
 #### Security
-- **SQL Injection Prevention**: Added identifier validation and escaping for table names, column names, and index names
+- **SQL Injection Prevention**: Added identifier escaping for table names, column names, and index names
 - **Input Validation**: Schema validation to reject dangerous SQL statements (ATTACH DATABASE, DETACH DATABASE, unsafe pragmas)
 - **Pragma Whitelist**: Only allows safe, known pragmas to prevent security issues
 - **Identifier Sanitization**: All SQL identifiers are properly escaped using double-quote escaping
