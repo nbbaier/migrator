@@ -97,7 +97,7 @@ export async function migrate(
  * console.log(`Made ${migrator.nChanges} changes`);
  * ```
  */
-export class Migrator {
+class Migrator {
 	/** The SQLite/libSQL client for the database being migrated */
 	public readonly db: Client;
 	/** The target schema SQL to migrate towards */
@@ -159,7 +159,11 @@ export class Migrator {
 		const dangerousPatterns = [
 			{ pattern: /\battach\s+database\b/i, message: "ATTACH DATABASE" },
 			{ pattern: /\bdetach\s+database\b/i, message: "DETACH DATABASE" },
-			{ pattern: /\bpragma\s+(?!foreign_keys|user_version|defer_foreign_keys|foreign_key_check|table_info)\w+/i, message: "unsafe PRAGMA" },
+			{
+				pattern:
+					/\bpragma\s+(?!foreign_keys|user_version|defer_foreign_keys|foreign_key_check|table_info)\w+/i,
+				message: "unsafe PRAGMA",
+			},
 		];
 
 		for (const { pattern, message } of dangerousPatterns) {
@@ -601,7 +605,7 @@ export class Migrator {
  * }
  * ```
  */
-export class RuntimeError extends Error {}
+class RuntimeError extends Error {}
 
 /**
  * Escapes a SQL identifier by wrapping it in double quotes.

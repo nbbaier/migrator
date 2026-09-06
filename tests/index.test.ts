@@ -305,7 +305,9 @@ test("migrate handles tables with special characters in column names", async () 
 
 		await migrate(db, targetSchema);
 
-		const data = await db.execute('SELECT "user name", "email@address" FROM "my-table"');
+		const data = await db.execute(
+			'SELECT "user name", "email@address" FROM "my-table"',
+		);
 		expect(data.rows[0]?.[0]).toBe("Alice");
 		expect(data.rows[0]?.[1]).toBe("alice@example.com");
 	} finally {
