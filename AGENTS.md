@@ -1,21 +1,17 @@
-# AGENTS.md
+# migrator
 
-## Commands
-- **Test**: `bun test` (single test: `bun test test-name`)
-- **Lint**: `bun lint`
-- **Format**: `bun format`
-- **Check**: `bun check` (lint + format)
+Declarative SQLite schema migration. `migrate(db, schema, allowDeletions)` in
+`src/migrator.ts` diffs a target schema against the live database and recreates
+what differs inside one transaction. Behaviour is documented in the JSDoc on
+`migrate()` and `Migrator`; `python/migrator.py` is the original this ports.
 
-## Code Style
-- **TypeScript**: Strict mode enabled, ESNext target
-- **Formatting**: Biome with tabs, double quotes
-- **Imports**: Organized automatically by Biome
-- **Error handling**: Use custom `RuntimeError` class for migration errors
-- **Naming**: camelCase for functions/variables, PascalCase for classes
-- **Comments**: Avoid unless explicitly requested
+## Gotchas
+- `src/index.ts` runs a migration against `db/test.db` on import, and it is the
+  `module` entry in `package.json`. The library is `src/migrator.ts`.
+- `bun test <name>` filters by file path. One test: `bun test -t "<pattern>"`.
 
-## Architecture
-- **Core**: `src/migrator.ts` - main migration engine
-- **Entry**: `src/index.ts` - example usage
-- **Logging**: `src/logger.ts` - pino structured logging
-- **Tests**: `tests/index.test.ts` - Bun test framework
+## Before editing `src/` or `tests/`
+Read `CODING_STANDARDS.md`.
+
+## Done means
+`bun check` and `bun test` pass.
